@@ -1,0 +1,138 @@
+import pygame
+import numpy as np
+
+# 题目
+board = [
+    [0, 0, 0, 2, 6, 0, 7, 0, 1],
+    [6, 8, 0, 0, 7, 0, 0, 9, 0],
+    [1, 9, 0, 0, 0, 4, 5, 0, 0],
+    [8, 2, 0, 1, 0, 0, 0, 4, 0],
+    [0, 0, 4, 6, 0, 2, 9, 0, 0],
+    [0, 5, 0, 0, 0, 3, 0, 2, 8],
+    [0, 0, 9, 3, 0, 0, 0, 7, 4],
+    [0, 4, 0, 0, 5, 0, 0, 3, 6],
+    [7, 0, 3, 0, 1, 8, 0, 0, 0]
+]
+
+# 初始化pygame
+pygame.init()
+
+# 设置窗口
+WIDTH, HEIGHT = 540, 600
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("数独")
+
+# 颜色变量
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (128, 128, 128)
+GREEN = (0, 255, 0)
+
+# 设置字体
+FONT = pygame.font.SysFont("arial", 40)
+
+# 绘制数独盘面
+def draw_board():
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] != 0:
+                # 填入初始值
+                text = FONT.render(str(board[i][j]), True, GREEN)
+                WIN.blit(text, (j*60+20, i*60+15))
+            else:
+                # 空格
+                pygame.draw.rect(WIN, WHITE, (j*60+10, i*60+5, 50, 50))
+                
+    # 绘制竖线
+    for i in range(10):
+        if i % 3 == 0:
+            thick = 4
+        else:
+            thick = 1
+        pygame.draw.line(WIN, BLACK, (i*60+10, 0), (i*60+10, 540), thick)
+        
+    # 绘制横线
+    for i in range(10):
+        if i % 3 == 0:
+            thick = 4
+        else:
+            thick = 1
+        pygame.draw.line(WIN, BLACK, (0, i*60+5), (540, i*60+5), thick)
+        
+        
+# 检查是否填完整
+def check_complete():
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] == 0:
+                return False
+    return True
+
+# 检查填的数是否正确
+def check_valid(i, j, num):
+    # 检查行
+    if num in board[i]:
+        return False
+    
+    # 检查列
+    if num in [board[k][j] for k in range(9)]:
+        return False
+    
+    # 检查块
+    row = (i // 3) * 3
+    col = (j // 3) * 3
+    if num in [board[k][l] for k in range(row, row+3) for l in range(col, col+3)]:
+        return False
+    
+    return True
+
+# 提示成功
+def draw_success():
+    text = FONT.render("Success!", True, GREEN)
+    WIN.blit(text, (200, 560))
+    
+
+# 主循环
+running = True
+while running:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = pygame.mouse.get_pos()
+            row = y // 60
+            col = x // 60
+            
+            if board[row][col] == 0:
+                 # 显示输入框
+                pygame.draw.rect(WIN, GRAY, (col*60+10, row*60+5, 50, 50))
+                pygame.display.update()
+            
+                inputting = True
+                while inputting:
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.unicode.isdigit():
+                                num = int(event.unicode)
+                                if check_valid(row, col, num):
+                                    board[row][col] = num
+                                    inputting = False
+                                    
+                                    # 检查是否填完整并提示成功
+                                    if check_complete():
+                                        draw_success()
+                                        
+                            elif event.key == pygame.K_BACKSPACE:
+                                board[row][col] = 0
+                                inputting = False
+                                
+            else:
+                # 点击已有数字，不做处理
+                pass
+            
+    # 绘制数独盘面
+    draw_board()
+
+    pygame.display.update()
