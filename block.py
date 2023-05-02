@@ -1,6 +1,5 @@
 import random
 
-
 BLOCK_SHAPES = {'I': [[1, 1, 1, 1]],
                 'J': [[1, 0, 0],
                       [1, 1, 1]],
@@ -15,10 +14,8 @@ BLOCK_SHAPES = {'I': [[1, 1, 1, 1]],
                      [1,1]]
                 }    
  
-
 class Block:
-    def __init__(self,shapeID = 'random',x=0,y=0):
-        
+    def __init__(self,shapeID = 'random',x=0,y=0):        
         if shapeID == 'random':
             self.shapeID = random.choice(list(BLOCK_SHAPES.keys())) 
         else:
@@ -35,10 +32,7 @@ class Block:
     
     def moveLeft(self):
         self.x -= 1
-    
-        
-    #generate a random shape from the BLOCK_SHAPES
-   
+         
     def getShape(self):
         if self.shapeID == 'EMPTY':
             return list([])
@@ -52,7 +46,3 @@ class Block:
     def rotate(self):
         self.rotation += 1
         self.rotation = self.rotation % 4
-
-        
-#create unittest for the Block class
-

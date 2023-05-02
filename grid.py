@@ -76,8 +76,6 @@ class Grid:
             for col in range(self.nrCols):
                 self.__setValue__(r,col,self.__getValue__(r-1,col))
 
-
-
     def __isCollision__(self,block:Block):
         shape = block.getShape()
         for i in range(len(shape)):
