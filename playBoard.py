@@ -2,6 +2,7 @@ import pygame
 from block import Block
 from grid import Grid
 
+CELL_SIZE = 40
 BORDER = CELL_SIZE
 
 NEXT_BLOCK_BOARD_WIDTH = CELL_SIZE*6
