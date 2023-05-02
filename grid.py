@@ -66,7 +66,7 @@ class Grid:
                 
     def isGameOver(self):
         for col in range(self.nrCols):
-            if self.__getValue__(1,col):
+            if self.__getValue__(0,col):
                 return True
         return False
     

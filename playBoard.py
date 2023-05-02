@@ -20,15 +20,13 @@ RED=(255,0,0)
 
 
 class PlayBoard:
-    def drawPlayBoard(self,score,ongoingBlock,nextBlock,grid):
+    def drawPlayBoard(self,score,grid,ongoingBlock=None,nextBlock=None):
         #fill screen with black
         pygame.draw.rect(self.palyBoard, (0,0,0), (0, 0, self.palyBoard.get_width(), self.palyBoard.get_height()), 0)
         
         self.__drawScoreBoard__(score)
-        if ongoingBlock:
-            self.__drawOngoingBlockBoard__(ongoingBlock)
-        if nextBlock:
-            self.__drawNextBlockBoard__(nextBlock)
+        self.__drawOngoingBlockBoard__(ongoingBlock)
+        self.__drawNextBlockBoard__(nextBlock)
         self.__drawSettledBlock__(grid)
         self.__drawGrid__()
         

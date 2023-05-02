@@ -10,118 +10,110 @@ NR_COLS = 8
 class Game:
        
     def __init__(self) -> None:
+        self.__initTimer__()
+
+    def __initTimer__(self):
         pygame.time.Clock()
         self.currentTickTime = 0
+            
+    def __isGameStarted__(self):
+        return self.started
                 
-    def startGame(self):        
-        self.ongoingBlock = Block()
-        self.nextBlock = Block()
-        self.started = True
-    
-    def setGame(self):
+    def __resetGame__(self):
         self.playBoard = PlayBoard(NR_ROWS, NR_COLS)
-        #init the pygame clock
-        self.ongoingBlock = Block('EMPTY')
-        self.nextBlock = Block('EMPTY')
         self.grid = Grid(NR_ROWS, NR_COLS)
         self.score = 0
         self.started = False
-        self.playBoard.drawPlayBoard(self.score,
-                                        self.ongoingBlock,self.nextBlock,
-                                        self.grid)
-
+        self.playBoard.drawPlayBoard(self.score,self.grid)
         
-    def isGameStarted(self):
-        return self.started
+    def __startOneRun__(self):        
+        self.nextBlock = Block()
+        self.__newBlock__()
+        self.started = True
         
-    def rotateBlock(self):
+    def __rotateBlock__(self):
         self.grid.rotateBlock(self.ongoingBlock)
         
-    def moveBlockRight(self):
+    def __moveBlockRight__(self):
         self.grid.moveBlockRight(self.ongoingBlock)
 
-    def moveBlockLeft(self):
+    def __moveBlockLeft__(self):
         self.grid.moveBlockLeft(self.ongoingBlock)
 
-    def moveBlockDown(self):
+    def __moveBlockDown__(self):
         self.grid.moveBlockDown(self.ongoingBlock)
     
-    def __responsEvent__(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            elif event.type == pygame.KEYDOWN:
-                if not self.isGameStarted():
-                    self.startGame()
-                    continue
-                if event.key == pygame.K_LEFT:
-                    self.moveBlockLeft()
-                elif event.key == pygame.K_RIGHT:
-                    self.moveBlockRight()
-                elif event.key == pygame.K_DOWN:
-                    self.moveBlockDown()
-                elif event.key == pygame.K_UP:
-                    self.rotateBlock()
-    
-    def isBlockTouchBottom(self):
+    def __isBlockTouchBottom__(self):
         return self.grid.isBlockTouchBottom(self.ongoingBlock) 
     
-    def settleBlock(self):
+    def __settleBlock__(self):
         
         self.grid.settleBlock(self.ongoingBlock)
              
-    def isGameOver(self):
-        return self.grid.isGameOver()
-    
-    def stopGame(self):
-        self.setGame()
-        
-        
-        
-    
-    def clearFullRows(self):
+    def __clearFullRows__(self):
         rows = self.grid.clearFullRows()
-        self.score += rows
+        self.score += rows*rows
     
-    def newBlock(self):
+    def __newBlock__(self):
         self.ongoingBlock = self.nextBlock
         self.nextBlock = Block()        
     
-    def reachTickTime(self):
-        # initial the pygame clock
+    def __reachTickTime__(self):
         now  = pygame.time.get_ticks()
         if now - self.currentTickTime >= 1000:
             self.currentTickTime = pygame.time.get_ticks()
             return True
             
+    def __isGameOver__(self):
+        return self.grid.isGameOver()
     
+    def __stopGame__(self):
+        self.__resetGame__()
+            
+    def __drawBoard__(self):
+        self.playBoard.drawPlayBoard(self.score,self.grid,
+                                         self.ongoingBlock,self.nextBlock
+                                         )
+        
+    def __responsEvent__(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                if not self.__isGameStarted__():
+                    self.__startOneRun__()
+
+                if event.key == pygame.K_LEFT:
+                    self.__moveBlockLeft__()
+                elif event.key == pygame.K_RIGHT:
+                    self.__moveBlockRight__()
+                elif event.key == pygame.K_DOWN:
+                    self.__moveBlockDown__()
+                elif event.key == pygame.K_UP:
+                    self.__rotateBlock__()
                     
     def main(self):
+        self.__resetGame__()
 
-        self.setGame()
         while True:
             self.__responsEvent__()
 
-            if not self.isGameStarted():
+            if not self.__isGameStarted__():
                 continue                                 
             
-            if self.reachTickTime():
-                self.moveBlockDown()
+            if self.__reachTickTime__():
+                self.__moveBlockDown__()
                                 
-            if self.isBlockTouchBottom():
-                self.settleBlock()
-                self.clearFullRows()
-                if self.isGameOver():
-                    self.stopGame()
+            if self.__isBlockTouchBottom__():
+                self.__settleBlock__()
+                self.__clearFullRows__()
+                if self.__isGameOver__():
+                    self.__stopGame__()
                 else:
-                    self.newBlock()                
+                    self.__newBlock__()                
                                                     
             self.__drawBoard__()
 
-    def __drawBoard__(self):
-        self.playBoard.drawPlayBoard(self.score,
-                                         self.ongoingBlock,self.nextBlock,
-                                         self.grid)
             
 game = Game()
 game.main()

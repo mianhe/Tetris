@@ -14,7 +14,7 @@ BLOCK_SHAPES = {'I': [[1, 1, 1, 1]],
                 'O':[[1,1],
                      [1,1]]
                 }    
-
+ 
 
 class Block:
     def __init__(self,shapeID = 'random',x=0,y=0):
